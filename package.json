@@ -32,17 +32,17 @@
     "rollup-plugin-terser": "^4.0.4"
   },
   "main": "rollup.config.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/fantasyui-com/fantasyui.git"
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/fantasyui-com/fantasyui/issues"
-  },
-  "homepage": "https://github.com/fantasyui-com/fantasyui#readme",
   "name": "fantasy-gui",
-  "description": "Futuristic User Interface Toolkit"
+  "description": "Futuristic User Interface Toolkit",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fantasyui-com/fantasy-gui.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fantasyui-com/fantasy-gui/issues"
+  },
+  "homepage": "https://github.com/fantasyui-com/fantasy-gui#readme"
 }
