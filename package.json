@@ -3,7 +3,8 @@
   "scripts": {
     "dev": "sapper dev",
     "build": "sapper build --legacy",
-    "export": "sapper export --legacy",
+    "export": "sapper export --basepath fantasy-gui --legacy; rm -fr docs; cp -fr __sapper__/export/fantasy-gui docs;",
+    "pub": "npm run export; git add .; git commit -m \"New Release\"; git push;",
     "start": "node __sapper__/build",
     "cy:run": "cypress run",
     "cy:open": "cypress open",
