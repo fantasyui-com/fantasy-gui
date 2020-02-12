@@ -1,46 +1,34 @@
 <style>
-	h1, figure, p {
-		text-align: center;
-		margin: 0 auto;
-	}
 
-	h1 {
-		font-size: 2.8em;
-		text-transform: uppercase;
-		font-weight: 700;
-		margin: 0 0 0.5em 0;
-	}
-
-	figure {
-		margin: 0 0 1em 0;
-	}
-
-	img {
-		width: 100%;
-		max-width: 400px;
-		margin: 0 0 1em 0;
-	}
-
-	p {
-		margin: 1em auto;
-	}
-
-	@media (min-width: 480px) {
-		h1 {
-			font-size: 4em;
-		}
-	}
 </style>
 
 <svelte:head>
-	<title>Sapper project template</title>
+  <title>Sapper project template</title>
 </svelte:head>
 
-<h1>Great success!</h1>
 
-<figure>
-	<img alt='Borat' src='great-success.png'>
-	<figcaption>HIGH FIVE!</figcaption>
-</figure>
+<div class="container-fluid mb-0">
 
-<p><strong>Try editing this file (src/routes/index.svelte) to test live reloading.</strong></p>
+  <div class="row">
+
+    <div class="col-12 col-md-6 col-lg-9 p-5 shadow" style="min-height: 60rem;">
+      <h4 class="mb-4">Preview Pane</h4>
+    </div>
+
+    <div class="col-12 col-md-6 col-lg-3 p-5 bg-dark text-white shadow" style="min-height: 60rem;">
+      <h4 class="mb-0">Preference Pane</h4>
+      <div class="mb-3"><small class="text-muted">class configuration</small></div>
+    </div>
+
+  </div>
+
+  <div class="row">
+
+      <div class="col p-5 bg-dark text-white shadow" style="min-height: 30rem;">
+        <h4 class="mb-0">Generated Source-code</h4>
+        <div class="mb-3"><small class="text-muted">copy</small></div>
+      </div>
+
+  </div>
+
+</div>
