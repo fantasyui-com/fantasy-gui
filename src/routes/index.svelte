@@ -12,7 +12,7 @@
   <div class="row">
 
     <div class="col-12 col-md-6 col-lg-9 p-5 shadow" style="min-height: 60rem;">
- 
+
 
 
       <div>
@@ -41,7 +41,7 @@
 
   <div class="row">
 
-      <div class="col p-5 bg-dark text-white shadow" style="min-height: 30rem;">
+      <div class="col p-5 bg-dark text-white shadow border-top border-secondary" style="min-height: 30rem;">
         <h4 class="mb-0">Generated Source-code</h4>
         <div class="mb-3"><small class="text-muted">copy the code below</small></div>
       </div>
