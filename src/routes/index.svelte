@@ -16,14 +16,14 @@ let preferences = [
   {
     id: 'darkness',
     type:'range',
-    label: 'darkness',
+    label: 'Darkness Level',
     base: .1,
     precision: 1,
   },
   {
     id: 'space',
     type:'range',
-    label: 'Space',
+    label: 'Empty Space',
     base: .1,
   },
 
@@ -58,7 +58,7 @@ function darkness(val, color){
   return chroma(color).darken( val ).hex();
 }
 
-$: bgPrimaryDirectives = `
+$: backgroundPrimaryDirectives = `
   color: ${chroma('#649093').brighten( configuration.darkness.base ).hex()};
 
   background-color: ${chroma('#1e3233').darken( configuration.darkness.base ).hex()};
@@ -88,7 +88,7 @@ $: spaceLgDirectives = `
   padding: ${clamp(configuration.space.base,1,3,2)}rem;
 `.replace(/^\n|\n$/g,'');
 
-$: bgPrimaryDirectivesPreview = css`${bgPrimaryDirectives}`;
+$: backgroundPrimaryDirectivesPreview = css`${backgroundPrimaryDirectives}`;
 
 $: glowSmDirectivesPreview = css`${glowSmDirectives}`;
 $: glowLgDirectivesPreview = css`${glowLgDirectives}`;
@@ -101,8 +101,8 @@ function highlightCss(code){
 }
 
 $: cssCode = highlightCss(`
-.bg-primary {
-${bgPrimaryDirectives}
+.background-primary {
+${backgroundPrimaryDirectives}
 }
 
 .glow-sm {
@@ -135,7 +135,7 @@ ${spaceLgDirectives}
 
   <div class="row">
 
-    <div class="{bgPrimaryDirectivesPreview} col-12 col-md-6 col-lg-9 p-5 shadow" style="min-height: 20rem;">
+    <div class="{backgroundPrimaryDirectivesPreview} col-12 col-md-6 col-lg-9 p-5 shadow" style="min-height: 20rem;">
 
 
 
@@ -174,26 +174,26 @@ ${spaceLgDirectives}
                     <span>Name: </span>
                     <strong><abbr title="required">*</abbr></strong>
                   </label>
-                  <input  class="{bgPrimaryDirectivesPreview} {glowSmDirectivesPreview}" type="text" id="name" name="username">
+                  <input  class="{backgroundPrimaryDirectivesPreview} {glowSmDirectivesPreview}" type="text" id="name" name="username">
                 </p>
                 <p class="{spaceSmDirectivesPreview}">
                   <label for="mail">
                     <span>E-mail: </span>
                     <strong><abbr title="required">*</abbr></strong>
                   </label>
-                  <input  class="{bgPrimaryDirectivesPreview} {glowSmDirectivesPreview}" type="text" id="mail" name="usermail">
+                  <input  class="{backgroundPrimaryDirectivesPreview} {glowSmDirectivesPreview}" type="text" id="mail" name="usermail">
                 </p>
                 <p class="{spaceSmDirectivesPreview}">
                   <label for="pwd">
                     <span>Password: </span>
                     <strong><abbr title="required">*</abbr></strong>
                   </label>
-                  <input  class="{bgPrimaryDirectivesPreview} {glowSmDirectivesPreview}" type="text" id="pwd" name="password">
+                  <input  class="{backgroundPrimaryDirectivesPreview} {glowSmDirectivesPreview}" type="text" id="pwd" name="password">
                 </p>
             </section>
 
             <section>
-                <p> <button class="{bgPrimaryDirectivesPreview} {glowSmDirectivesPreview}" type="submit">Validate the payment</button> </p>
+                <p> <button class="{backgroundPrimaryDirectivesPreview} {glowSmDirectivesPreview}" type="submit">Validate the payment</button> </p>
             </section>
         </form>
 
