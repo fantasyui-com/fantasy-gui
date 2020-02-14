@@ -61,7 +61,7 @@ preferences.forEach(function(o){
     // data is available, override the initial setting
     o.fraction = parseFloat( $page.query[o.id] );
   }
-  console.log(o.fraction);
+  //console.log(o.fraction);
 })
 
 
