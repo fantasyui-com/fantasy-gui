@@ -1,15 +1,15 @@
 <script>
 
+import capitalize from 'lodash/capitalize.js';
+import kebabCase from 'lodash/kebabCase.js';
+import camelCase from 'lodash/camelCase.js';
+import chroma from 'chroma-js';
+import { css } from 'emotion';
 import hljs from 'highlight.js/lib/highlight.js';
 import cssLang from 'highlight.js/lib/languages/less';
 import htmlLang from 'highlight.js/lib/languages/xml';
 hljs.registerLanguage('css', cssLang);
 hljs.registerLanguage('html', htmlLang);
-import chroma from 'chroma-js';
-
-import { css } from 'emotion';
-import capitalize from 'lodash/capitalize.js';
-
 
 let preferences = [
 
@@ -48,77 +48,174 @@ $: configuration = preferences.reduce(function(map, obj) {
     return map;
 }, {});
 
+// HELPER FUNCTIONS
+
 function clamp(val, min, max, fix=0){
   return (min + ((max-min) * val)).toFixed(fix);
 }
 
-// box-shadow: 0 ${clamp(configuration.glow.base,2,10)}px ${clamp(configuration.glow.base,2,16)}px 0 rgba(0,0,0,0.2),0 ${clamp(configuration.glow.base,1,6)}px ${clamp(configuration.glow.base,12,33)}px 0 rgba(0,0,0,0.19);
+// CODE GENERATION
 
-function darkness(val, color){
-  return chroma(color).darken( val ).hex();
-}
+$: database = [
 
-$: backgroundPrimaryDirectives = `
-  color: ${chroma('#649093').brighten( configuration.darkness.base ).hex()};
+  {
+    name: 'background',
+    variant: 'primary',
+    declaration: {
+      color: chroma('#649093').brighten( configuration.darkness.base ).hex(),
+      backgroundColor: chroma('#1e3233').darken( configuration.darkness.base ).hex(),
+    },
+  },
 
-  background-color: ${chroma('#1e3233').darken( configuration.darkness.base ).hex()};
-`.replace(/^\n|\n$/g,'');
+  {
+    name: 'glow',
+    declaration: {
+      borderStyle: `solid`,
+      borderWidth: `1px`,
+      borderColor: `#9ecaed`,
+    },
+  },
 
-$: glowSmDirectives = `
-  border-style: solid;
-  border-width: 1px;
-  border-color: #9ecaed;
-  box-shadow: inset 0 0 ${clamp(configuration.glow.base,2,12)}px #9ecaed, 0 0 ${clamp(configuration.glow.base,2,12)}px #9ecaed;
-  border-radius: ${clamp(configuration.glow.base,0,4)}px;
-`.replace(/^\n|\n$/g,'');
+  {
+    name: 'glow',
+    variant: 'small',
+    requires:'glow',
+    declaration: {
+      boxShadow: `inset 0 0 ${clamp(configuration.glow.base,2,12)}px #9ecaed, 0 0 ${clamp(configuration.glow.base,2,12)}px #9ecaed`,
+      borderRadius: `${clamp(configuration.glow.base,0,4)}px`,
+    },
+  },
 
-$: glowLgDirectives = `
-  border-style: solid;
-  border-width: 1px;
-  border-color: #9ecaed;
-  box-shadow: inset 0 0 ${clamp(configuration.glow.base,2,24)}px #9ecaed, 0 0 ${clamp(configuration.glow.base,2,24)}px #9ecaed;
-  border-radius: ${clamp(configuration.glow.base,0,20)}px;
-`.replace(/^\n|\n$/g,'');
+  {
+    name: 'glow',
+    variant: 'large',
+    requires:'glow',
+    declaration: {
+      boxShadow: `inset 0 0 ${clamp(configuration.glow.base,2,24)}px #9ecaed, 0 0 ${clamp(configuration.glow.base,2,24)}px #9ecaed`,
+      borderRadius: `${clamp(configuration.glow.base,0,20)}px`,
+    },
+  },
 
-$: spaceSmDirectives = `
-  padding: ${clamp(configuration.space.base,0,.5,2)}rem;
-`.replace(/^\n|\n$/g,'');
+  {
+    name: 'space',
+    variant: 'small',
+    declaration: {
+      padding: `${clamp(configuration.space.base,0,.5,2)}rem`,
+    },
+  },
 
-$: spaceLgDirectives = `
-  padding: ${clamp(configuration.space.base,1,3,2)}rem;
-`.replace(/^\n|\n$/g,'');
+  {
+    name: 'space',
+    variant: 'large',
+    declaration: {
+      padding: `${clamp(configuration.space.base,1,3,2)}rem`,
+    },
+  },
 
-$: backgroundPrimaryDirectivesPreview = css`${backgroundPrimaryDirectives}`;
 
-$: glowSmDirectivesPreview = css`${glowSmDirectives}`;
-$: glowLgDirectivesPreview = css`${glowLgDirectives}`;
 
-$: spaceSmDirectivesPreview = css`${spaceSmDirectives}`;
-$: spaceLgDirectivesPreview = css`${spaceLgDirectives}`;
 
+
+
+];
+
+
+$: generated = database.reduce(function(object, rule) {
+    const id = [rule.name, rule.variant].filter(i=>i).join('-')
+    const name = camelCase(id);
+    object[name] = rule;
+    rule.selector = `.` + id;
+    rule.declarations = [];
+    if(rule.requires) rule.declarations.push(`/* NOTE: requires base class "${rule.requires}" */`);
+    rule.declarations = rule.declarations.concat( Object.keys(rule.declaration).map(property=>`${kebabCase(property)}: ${rule.declaration[property]};`) )
+    rule.code = `${rule.selector} {\n${rule.declarations.map(declaration=>'  '+declaration).join('\n')}\n}`;
+    rule.preview = css`${rule.declarations.join('')}`;
+    return object;
+}, {});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// $: backgroundPrimaryDirectives = `
+//   color: ${chroma('#649093').brighten( configuration.darkness.base ).hex()};
+//   background-color: ${chroma('#1e3233').darken( configuration.darkness.base ).hex()};
+// `.replace(/^\n|\n$/g,'');
+//
+// $: glowSmDirectives = `
+//   border-style: solid;
+//   border-width: 1px;
+//   border-color: #9ecaed;
+//   box-shadow: inset 0 0 ${clamp(configuration.glow.base,2,12)}px #9ecaed, 0 0 ${clamp(configuration.glow.base,2,12)}px #9ecaed;
+//   border-radius: ${clamp(configuration.glow.base,0,4)}px;
+// `.replace(/^\n|\n$/g,'');
+//
+// $: glowLgDirectives = `
+//   border-style: solid;
+//   border-width: 1px;
+//   border-color: #9ecaed;
+//   box-shadow: inset 0 0 ${clamp(configuration.glow.base,2,24)}px #9ecaed, 0 0 ${clamp(configuration.glow.base,2,24)}px #9ecaed;
+//   border-radius: ${clamp(configuration.glow.base,0,20)}px;
+// `.replace(/^\n|\n$/g,'');
+//
+// $: spaceSmDirectives = `
+//   padding: ${clamp(configuration.space.base,0,.5,2)}rem;
+// `.replace(/^\n|\n$/g,'');
+//
+// $: spaceLgDirectives = `
+//   padding: ${clamp(configuration.space.base,1,3,2)}rem;
+// `.replace(/^\n|\n$/g,'');
+
+// // USED IN VISUAL PREVIEW
+// $: generated.backgroundPrimary.preview = css`${backgroundPrimaryDirectives}`;
+// $: generated.glowSmall.preview = css`${glowSmDirectives}`;
+// $: glowLgDirectivesPreview = css`${glowLgDirectives}`;
+// $: generated.spaceSmall.preview = css`${spaceSmDirectives}`;
+// $: spaceLgDirectivesPreview = css`${spaceLgDirectives}`;
+
+// USED IN GENERATED CODE CODE
 function highlightCss(code){
   return hljs.highlight('css', code).value
 }
 
-$: cssCode = highlightCss(`
-.background-primary {
-${backgroundPrimaryDirectives}
-}
+$: cssCode = highlightCss( Object.keys(generated).map(key=>generated[key].code).join('\n\n') );
 
-.glow-sm {
-${glowSmDirectives}
-}
-.glow-lg {
-${glowLgDirectives}
-}
+//
+// $: cssCode = highlightCss(`
+// .background-primary {
+// ${backgroundPrimaryDirectives}
+// }
+//
+// .glow-sm {
+// ${glowSmDirectives}
+// }
+// .glow-lg {
+// ${glowLgDirectives}
+// }
+//
+// .space-sm {
+// ${spaceSmDirectives}
+// }
+// .space-lg {
+// ${spaceLgDirectives}
+// }
+// `);
+//
 
-.space-sm {
-${spaceSmDirectives}
-}
-.space-lg {
-${spaceLgDirectives}
-}
-`);
+/*
+TODO: ADD CRT EFFECT
+background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+background-size: 100% 2px, 3px 100%;
+*/
 
 </script>
 
@@ -135,18 +232,18 @@ ${spaceLgDirectives}
 
   <div class="row">
 
-    <div class="{backgroundPrimaryDirectivesPreview} col-12 col-md-6 col-lg-9 p-5 shadow" style="min-height: 20rem;">
+    <div class="{generated.backgroundPrimary.preview} col-12 col-md-6 col-lg-9 p-5 shadow" style="min-height: 20rem;">
 
 
 
       <div>
-      <form class="{glowLgDirectivesPreview} {spaceLgDirectivesPreview}">
+      <form class="{generated.glow.preview} {generated.glowSmall.preview} {generated.spaceLarge.preview}">
 
             <h1>Payment form</h1>
             <p>Required fields are followed by <strong><abbr title="required">*</abbr></strong>.</p>
             <section>
                 <h2>Contact information</h2>
-                <fieldset class="{spaceSmDirectivesPreview}">
+                <fieldset class="{generated.spaceSmall.preview}">
                   <legend>Title</legend>
                   <ul>
                       <li>
@@ -169,31 +266,31 @@ ${spaceLgDirectives}
                       </li>
                   </ul>
                 </fieldset>
-                <p class="{spaceSmDirectivesPreview}">
+                <p class="{generated.spaceSmall.preview}">
                   <label for="name">
                     <span>Name: </span>
                     <strong><abbr title="required">*</abbr></strong>
                   </label>
-                  <input  class="{backgroundPrimaryDirectivesPreview} {glowSmDirectivesPreview}" type="text" id="name" name="username">
+                  <input  class="{generated.backgroundPrimary.preview} {generated.glowSmall.preview}" type="text" id="name" name="username">
                 </p>
-                <p class="{spaceSmDirectivesPreview}">
+                <p class="{generated.spaceSmall.preview}">
                   <label for="mail">
                     <span>E-mail: </span>
                     <strong><abbr title="required">*</abbr></strong>
                   </label>
-                  <input  class="{backgroundPrimaryDirectivesPreview} {glowSmDirectivesPreview}" type="text" id="mail" name="usermail">
+                  <input  class="{generated.backgroundPrimary.preview} {generated.glowSmall.preview}" type="text" id="mail" name="usermail">
                 </p>
-                <p class="{spaceSmDirectivesPreview}">
+                <p class="{generated.spaceSmall.preview}">
                   <label for="pwd">
                     <span>Password: </span>
                     <strong><abbr title="required">*</abbr></strong>
                   </label>
-                  <input  class="{backgroundPrimaryDirectivesPreview} {glowSmDirectivesPreview}" type="text" id="pwd" name="password">
+                  <input  class="{generated.backgroundPrimary.preview} {generated.glowSmall.preview}" type="text" id="pwd" name="password">
                 </p>
             </section>
 
             <section>
-                <p> <button class="{backgroundPrimaryDirectivesPreview} {glowSmDirectivesPreview}" type="submit">Validate the payment</button> </p>
+                <p> <button class="{generated.backgroundPrimary.preview} {generated.glowSmall.preview}" type="submit">Validate the payment</button> </p>
             </section>
         </form>
 
@@ -238,6 +335,13 @@ ${spaceLgDirectives}
         <h4 class="mb-0 p-2">Generated Source-code</h4>
         <div class="mb-3 p-2"><small class="text-muted">copy the code below</small></div>
 
+
+
+        <pre class="mb-0 shadow">
+        <code class="language-css css hljs">
+        {JSON.stringify(generated,null,'  ')}
+        </code>
+        </pre>
 
 
         <pre class="mb-0 shadow">
