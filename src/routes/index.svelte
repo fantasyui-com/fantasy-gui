@@ -79,7 +79,8 @@ $: generation = [
   },
 
   {
-    name: 'crt',
+    name: 'background',
+    variant: 'crt',
     declaration: {
       background: `linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06))`,
       backgroundSize: `100% ${clamp(configuration.phosphor.fraction,2,8)}px, ${clamp(configuration.phosphor.fraction,3,12)}px 100%`,
@@ -139,6 +140,7 @@ $: generation = [
 ];
 
 let abbreviated = true;
+let important = false;
 
 function abbreviate(string){
   let result = string;
@@ -180,8 +182,8 @@ $: generated = generation.reduce(function(object, rule) {
     object[propertyName] = rule;
     rule.selector = `.` + ruleName;
     rule.declarations = [];
-    if(rule.requires) rule.declarations.push(`/* NOTE: requires "${rule.requires}" class: class="${rule.requires} ${ruleName}" */`);
-    rule.declarations = rule.declarations.concat( Object.keys(rule.declaration).map(property=>`${kebabCase(property)}: ${rule.declaration[property]};`) )
+    if(rule.requires) rule.declarations.push(`/* NOTE: requires "${rule.requires}" class: <div class="${rule.requires} ${ruleName}"></div> */`);
+    rule.declarations = rule.declarations.concat( Object.keys(rule.declaration).map(property=>`${kebabCase(property)}: ${rule.declaration[property]}${important?' !important':''};`) )
     rule.code = `${rule.selector} {\n${rule.declarations.map(declaration=>'  '+declaration).join('\n')}\n}`;
     rule.preview = css`${rule.declarations.join('')}`;
     return object;
@@ -223,60 +225,57 @@ $: cssCode = highlightCss( Object.keys(generated).map(key=>generated[key].code).
 
 
       <div>
-      <form class="{generated.crt.preview} {generated.glow.preview} {generated.glowLarge.preview} {generated.spaceLarge.preview}">
+      <form class="{generated.backgroundCrt.preview} {generated.glow.preview} {generated.glowLarge.preview} {generated.spaceLarge.preview}">
 
-            <h1>Payment form</h1>
-            <p>Required fields are followed by <strong><abbr title="required">*</abbr></strong>.</p>
+            <h1>ENCOM: Flux Control</h1>
+            <p>Media Connection</p>
             <section>
-                <h2>Contact information</h2>
+                <h2>Internet Protocol</h2>
                 <fieldset class="{generated.spaceSmall.preview}">
-                  <legend>Title</legend>
+                  <legend>Server Bypass Routes</legend>
                   <ul>
                       <li>
                         <label for="title_1">
                           <input type="radio" id="title_1" name="title" value="A">
-                          Ace
+                          Alfa Route
                         </label>
                       </li>
                       <li>
                         <label for="title_2">
                           <input type="radio" id="title_2" name="title" value="K" >
-                          King
+                          Mike Route
                         </label>
                       </li>
                       <li>
                         <label for="title_3">
                           <input type="radio" id="title_3" name="title" value="Q">
-                          Queen
+                          Foxtrot Route
                         </label>
                       </li>
                   </ul>
                 </fieldset>
                 <p class="{generated.spaceSmall.preview}">
+                  <label for="address">
+                    <span>Address: </span>
+                  </label>
+                  <input  class="{generated.backgroundPrimary.preview} {generated.glow.preview} {generated.glowSmall.preview} w-50" type="text" id="address" name="address" value="a4c2fdd3-77db-4ebe-b9dd-9ff54d4acdfa">
+                </p>
+                <p class="{generated.spaceSmall.preview}">
                   <label for="name">
-                    <span>Name: </span>
-                    <strong><abbr title="required">*</abbr></strong>
+                    <span>Username: </span>
                   </label>
-                  <input  class="{generated.backgroundPrimary.preview} {generated.glow.preview} {generated.glowSmall.preview}" type="text" id="name" name="username">
+                  <input  class="{generated.backgroundPrimary.preview} {generated.glow.preview} {generated.glowSmall.preview}" type="text" id="name" name="name" value="zerocool">
                 </p>
                 <p class="{generated.spaceSmall.preview}">
-                  <label for="mail">
-                    <span>E-mail: </span>
-                    <strong><abbr title="required">*</abbr></strong>
-                  </label>
-                  <input  class="{generated.backgroundPrimary.preview} {generated.glow.preview} {generated.glowSmall.preview}" type="text" id="mail" name="usermail">
-                </p>
-                <p class="{generated.spaceSmall.preview}">
-                  <label for="pwd">
+                  <label for="password">
                     <span>Password: </span>
-                    <strong><abbr title="required">*</abbr></strong>
                   </label>
-                  <input  class="{generated.backgroundPrimary.preview} {generated.glow.preview} {generated.glowSmall.preview}" type="text" id="pwd" name="password">
+                  <input  class="{generated.backgroundPrimary.preview} {generated.glow.preview} {generated.glowSmall.preview}" type="text" id="password" name="password" value="hunter2">
                 </p>
             </section>
 
             <section>
-                <p> <button class="{generated.backgroundPrimary.preview} {generated.glow.preview} {generated.glowSmall.preview}" type="submit">Validate the payment</button> </p>
+                <p> <button class="{generated.backgroundPrimary.preview} {generated.glow.preview} {generated.glowSmall.preview}" type="button">Validate Root</button> </p>
             </section>
         </form>
 
@@ -321,8 +320,12 @@ $: cssCode = highlightCss( Object.keys(generated).map(key=>generated[key].code).
         <h4 class="mb-0 p-2">Generated Source-code</h4>
 
         <div class="p-2">
-          Abbreviate Names <small class="text-muted">(activate for bootstrap naming convention compatibility &middot; recommended)</small>
+          Abbreviate Names <small class="text-muted">(activate for bootstrap naming convention compatibility &middot; <span class="text-info">recommended</span>)</small>
           <input class="d-block" type=checkbox bind:checked={abbreviated}>
+        </div>
+        <div class="p-2">
+          Use Force <small class="text-muted">(force override specificity)</small>
+          <input class="d-block" type=checkbox bind:checked={important}>
         </div>
 
         <div class="mb-3 p-2">
