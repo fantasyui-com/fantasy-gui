@@ -1,5 +1,9 @@
 <script>
 
+import { onMount } from "svelte";
+import { stores } from '@sapper/app';
+const { page } = stores();
+
 import capitalize from 'lodash/capitalize.js';
 import kebabCase from 'lodash/kebabCase.js';
 import camelCase from 'lodash/camelCase.js';
@@ -13,7 +17,9 @@ hljs.registerLanguage('html', htmlLang);
 
 // PREFERENCE PANE CONFIGURATION
 
-let preferences = [
+
+
+const preferences = [
 
   {
     id: 'darkness',
@@ -47,6 +53,24 @@ let preferences = [
   }
 
 ];
+
+preferences.forEach(function(o){
+  if( $page.query[o.id] === undefined){
+    // data was not present
+  }else{
+    // data is available, override the initial setting
+    o.fraction = parseFloat( $page.query[o.id] );
+  }
+  console.log(o.fraction);
+})
+
+
+$: baseUrl = '';
+onMount(async function() {
+  baseUrl = window.location.href.split('?')[0] + '?';
+});
+
+$: restore = baseUrl + preferences.map(o=>`${o.id}=${o.fraction}`).join('&');
 
 // PREFERENCE DATA PROCESSING
 
@@ -202,7 +226,7 @@ function highlightCss(code){
   return hljs.highlight('css', code).value
 }
 
-$: cssCode = highlightCss( Object.keys(generated).map(key=>generated[key].code).join('\n\n') );
+$: cssCode = highlightCss( `/* Restore or share current settings using: ${restore} */\n\n` + Object.keys(generated).map(key=>generated[key].code).join('\n\n') );
 
 
 </script>
@@ -229,6 +253,8 @@ $: cssCode = highlightCss( Object.keys(generated).map(key=>generated[key].code).
 
             <h1>ENCOM: Flux Control</h1>
             <p>Media Connection</p>
+
+
             <section>
                 <h2>Internet Protocol</h2>
                 <fieldset class="{generated.spaceSmall.preview}">
@@ -320,7 +346,7 @@ $: cssCode = highlightCss( Object.keys(generated).map(key=>generated[key].code).
         <h4 class="mb-0 p-2">Generated Source-code</h4>
 
         <div class="p-2">
-          Abbreviate Names <small class="text-muted">(activate for bootstrap naming convention compatibility &middot; <span class="text-info">recommended</span>)</small>
+          Abbreviate Names <small class="text-muted">(activate for Bootstrap naming convention compatibility &middot; <span class="text-info">recommended</span>)</small>
           <input class="d-block" type=checkbox bind:checked={abbreviated}>
         </div>
         <div class="p-2">
