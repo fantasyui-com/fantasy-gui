@@ -8,14 +8,15 @@
     "start": "node __sapper__/build",
     "cy:run": "cypress run",
     "cy:open": "cypress open",
-    "test": "run-p --race dev cy:run"
+    "test": "run-p --race dev cy:run",
+    "save": "git add .; git commit -m 'New Release'; git push; npm version patch; npm publish; git push;"
   },
   "dependencies": {
     "chroma-js": "^2.1.0",
     "compression": "^1.7.1",
     "cssgui": "^1.5.0",
     "emotion": "^10.0.27",
-    "highlight.js": "^9.18.1",
+    "highlight.js": "^11.3.1",
     "lodash": "^4.17.15",
     "polka": "next",
     "sirv": "^0.4.0"
@@ -34,13 +35,13 @@
     "rollup-plugin-babel": "^4.0.2",
     "rollup-plugin-css-only": "^2.0.0",
     "rollup-plugin-svelte": "^5.0.1",
-    "rollup-plugin-terser": "^4.0.4",
+    "rollup-plugin-terser": "^7.0.2",
     "sapper": "^0.27.0",
     "svelte": "^3.0.0"
   },
   "main": "rollup.config.js",
   "keywords": [],
-  "author": "",
+  "author": "fantasyui.com <fantasyui.com@gmail.com>",
   "license": "ISC",
   "name": "fantasy-gui",
   "description": "Futuristic User Interface Toolkit",
